@@ -13,7 +13,8 @@ table {
   margin-bottom: 2rem;
 }
 
-th, td {
+th,
+td {
   border: 1px solid #ddd;
   padding: 8px;
   text-align: left;
@@ -28,12 +29,15 @@ th {
   margin-bottom: 2rem;
   list-style: none;
 }
+
 .breadcrumb li {
   display: inline;
 }
+
 .breadcrumb li::after {
   content: " > ";
 }
+
 .breadcrumb li:nth-last-child()::after {
   content: "";
 }
