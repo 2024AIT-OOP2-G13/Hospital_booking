@@ -13,7 +13,7 @@ appointment_bp = Blueprint('appointment', __name__, url_prefix='/appointments')
 
 @appointment_bp.route('/')
 def list():
-    generate_pie_chart()
+    generate_department_pie_chart() #診療科のグラフを作る(画像保存まで行う)
     appointments = (Appointment
                    .select()
                    .join(User)
@@ -57,35 +57,30 @@ def edit(appointment_id):
     appointment_datetime_str = appointment.appointment_datetime.strftime('%Y-%m-%dT%H:%M') if appointment.appointment_datetime else ''
     return render_template('appointment_edit.html', appointment=appointment, users=users, appointment_datetime_str=appointment_datetime_str)
 
-def generate_pie_chart():
-    from peewee import fn  # Peeweeの集計関数をインポート
 
-    # データベースから診療科ごとの予約数を集計
+def generate_department_pie_chart():
+    from peewee import fn  #Peeweeが集計してくれるのでインポート
+
+    #データベースを基に診療科ごとの予約数を集計
     department_counts = (Appointment
                          .select(Appointment.department, fn.COUNT(Appointment.id).alias('count'))
                          .group_by(Appointment.department))
 
-    # 診療科名と予約数をリストに分ける
+    #診療科名と予約数をリストに分割
     labels = []
     counts = []
     for entry in department_counts:
         labels.append(entry.department)
         counts.append(entry.count)
 
-    # 円グラフを描画
+    # グラフを描画
     plt.figure(figsize=(6, 6))
-    plt.pie(counts, labels=labels, autopct='%1.1f%%')  # ラベルと割合を表示
+    plt.pie(counts, labels=labels, autopct='%1.1f%%')  # ラベルと割合をグラフに添える
 
-    # staticフォルダのパスを取得
-    static_dir = os.path.join(os.getcwd(), 'static')  # プロジェクト内のstaticフォルダ
+    #staticフォルダのパスを入手(これでするらしい)
+    static_dir = os.path.join(os.getcwd(), 'static')  
 
-    # staticフォルダが存在しない場合、作成する
-    if not os.path.exists(static_dir):
-        os.makedirs(static_dir)
-
-    # staticフォルダ内に保存
+    #staticフォルダ内に保存
     save_path = os.path.join(static_dir, 'pie_department_chart.png')
     plt.savefig(save_path)
-    plt.close()  # グラフを閉じてリソースを解放
-
-    print(f"グラフは {save_path} に保存されました。")
+    plt.close() 
