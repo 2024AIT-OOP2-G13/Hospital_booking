@@ -2,11 +2,18 @@ from flask import Blueprint, render_template, request, redirect, url_for
 from models.appointment import Appointment
 from models.user import User
 from datetime import datetime
+import numpy as np
+import os
+
+import matplotlib  # matplotlibを先にインポート
+matplotlib.use('Agg')  # GUIのバックエンドを無効化
+import matplotlib.pyplot as plt
 
 appointment_bp = Blueprint('appointment', __name__, url_prefix='/appointments')
 
 @appointment_bp.route('/')
 def list():
+    generate_department_pie_chart() #診療科のグラフを作る(画像保存まで行う)
     appointments = (Appointment
                    .select()
                    .join(User)
@@ -49,3 +56,31 @@ def edit(appointment_id):
     users = User.select()
     appointment_datetime_str = appointment.appointment_datetime.strftime('%Y-%m-%dT%H:%M') if appointment.appointment_datetime else ''
     return render_template('appointment_edit.html', appointment=appointment, users=users, appointment_datetime_str=appointment_datetime_str)
+
+
+def generate_department_pie_chart():
+    from peewee import fn  #Peeweeが集計してくれるのでインポート
+
+    #データベースを基に診療科ごとの予約数を集計
+    department_counts = (Appointment
+                         .select(Appointment.department, fn.COUNT(Appointment.id).alias('count'))
+                         .group_by(Appointment.department))
+
+    #診療科名と予約数をリストに分割
+    labels = []
+    counts = []
+    for entry in department_counts:
+        labels.append(entry.department)
+        counts.append(entry.count)
+
+    # グラフを描画
+    plt.figure(figsize=(6, 6))
+    plt.pie(counts, labels=labels, autopct='%1.1f%%')  # ラベルと割合をグラフに添える
+
+    #staticフォルダのパスを入手(これでするらしい)
+    static_dir = os.path.join(os.getcwd(), 'static')  
+
+    #staticフォルダ内に保存
+    save_path = os.path.join(static_dir, 'pie_department_chart.png')
+    plt.savefig(save_path)
+    plt.close() 
