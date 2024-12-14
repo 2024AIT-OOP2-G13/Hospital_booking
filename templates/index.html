@@ -1,15 +1,18 @@
 <!DOCTYPE html>
 <html lang="ja">
+
 <head>
-    <meta charset="UTF-8">
-    <title>予約一覧</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='base-style.css') }}">
+  <meta charset="UTF-8">
+  <title>予約一覧</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='base-style.css') }}">
 </head>
+
 <body>
-    <h1>index</h1>
-    <ul>
-      <li><a href="{{ url_for('booking.request') }}">予約希望へ</a></li>
-      <li><a href="{{ url_for('order.list') }}">予約リスト</a></li>
-    </ul>
+  <h1>index</h1>
+  <ul>
+    <li><a href="{{ url_for('booking.request') }}">予約希望へ</a></li>
+    <li><a href="{{ url_for('order.list') }}">予約リスト</a></li>
+  </ul>
 </body>
+
 </html>
