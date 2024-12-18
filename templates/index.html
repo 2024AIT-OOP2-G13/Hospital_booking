@@ -2,12 +2,6 @@
 <html lang="ja">
 
 <head>
-  <meta charset="UTF-8" />
-  <title>予約一覧</title>
-  <link rel="stylesheet" href="{{ url_for('static', filename='base-style.css') }}" />
-</head>
-
-<head>
   <meta charset="UTF-8">
   <title>予約一覧</title>
   <link rel="stylesheet" href="{{ url_for('static', filename='base-style.css') }}">
@@ -19,13 +13,12 @@
     <div>group13</div>
   </div>
 
-
   <div class="bookingList">
+    
     <ul class="userList">
       <li style="font-size: 25px;">患者一覧</li>
       <li><a href="{{ url_for('user.list') }}">患者一覧</a></li>
       <li><a href="{{ url_for('user.add') }}">新規患者登録</a></li>
-
     </ul>
 
     <ul class="userList">
@@ -45,12 +38,10 @@
   </div>
 
   <div id="graph">{{ graph | safe }}</div>
-
   <h1>診療科の統計</h1>
   <img src="/static/pie_department_chart.png" alt="診療科の統計-円グラフ">
   <h1>症状の統計</h1>
   <img src="{{ url_for('static', filename='condition_chart.png') }}" alt="症状の統計-棒グラフ">
-
 </body>
 
 </html>
