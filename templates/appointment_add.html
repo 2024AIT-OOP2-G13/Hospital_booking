@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="ja">
+<html>
 
 <head>
     <meta charset="UTF-8">
-    <title>予約追加</title>
+    <title>新しい予約を追加</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='base-style.css') }}">
 </head>
 
@@ -15,11 +15,41 @@
         <li>新規予約</li>
     </ul>
 
-    <form action="{{ url_for('appointment.add') }}" method="post">
-        <label>日付: <input type="date" name="date" required></label><br>
-        <label>時間: <input type="time" name="time" required></label><br>
-        <label>患者名: <input type="text" name="patient_name" required></label><br>
-        <button type="submit">追加</button>
+    <form method="POST">
+        <div class="form-group">
+            <label for="user">患者</label>
+            <select name="user_id" id="user" class="form-control" required>
+                {% for user in users %}
+                <option value="{{ user.id }}">{{ user.name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="appointment_datetime">予約日時</label>
+            <input type="datetime-local" name="appointment_datetime" id="appointment_datetime" class="form-control"
+                required>
+        </div>
+
+        <div class="form-group">
+            <label for="department">診療科</label>
+            <select name="department" id="department" class="form-control" required>
+                <option value="">選択してください</option>
+                <option value="general-medicine">総合診療科</option>
+                <option value="internal-medicine">一般内科</option>
+                <option value="general-surgery">一般外科</option>
+                <option value="pediatric-surgery">小児外科</option>
+                <option value="pediatrics">小児内科</option>
+                <option value="obstetrics-gynecology">産婦人科</option>
+                <option value="ophthalmology">眼科</option>
+                <option value="dermatology">皮膚科</option>
+                <option value="emergency-medicine">救急科</option>
+                <option value="radiology">放射線科</option>
+                <option value="other-centers">その他センター等</option>
+            </select>
+        </div>
+
+        <button type="submit" class="btn btn-primary">登録</button>
     </form>
 </body>
 

@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="ja">
+<html>
 
 <head>
     <meta charset="UTF-8">
-    <title>予約一覧</title>
+    <title>データ一覧</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='base-style.css') }}">
 </head>
 
@@ -13,26 +13,46 @@
         <li><a href="{{ url_for('index') }}">HOME</a></li>
         <li>予約一覧</li>
     </ul>
-
-    <a href="{{ url_for('appointment.add') }}">新規予約</a>
+    <a href="{{ url_for('appointment.add') }}">予約追加</a>
     <table>
         <thead>
             <tr>
                 <th>&nbsp;</th>
-                <th>予約日時</th>
                 <th>患者名</th>
+                <th>予約日時</th>
+                <th>診療科</th>
             </tr>
         </thead>
         <tbody>
             {% for appointment in items %}
             <tr>
                 <td><a href="{{ url_for('appointment.edit', appointment_id=appointment.id) }}">編集</a></td>
+                <td>{{ appointment.user.name }}</td>
                 <td>{{ appointment.appointment_datetime.strftime('%Y-%m-%d %H:%M') }}</td>
-                <td>{{ appointment.patient_name }}</td>
+                <td>
+                    {% set departments = {
+                    'general-medicine': '総合診療科',
+                    'internal-medicine': '一般内科',
+                    'general-surgery': '一般外科',
+                    'pediatric-surgery': '小児外科',
+                    'pediatrics': '小児内科',
+                    'obstetrics-gynecology': '産婦人科',
+                    'ophthalmology': '眼科',
+                    'dermatology': '皮膚科',
+                    'emergency-medicine': '救急科',
+                    'radiology': '放射線科',
+                    'other-centers': 'その他センター等'
+                    } %}
+                    {{ departments[appointment.department] }}
+                </td>
             </tr>
             {% endfor %}
         </tbody>
     </table>
+
+    <h2>日別予約数のグラフ</h2>
+    <img src="data:image/png;base64,{{ image_base64 }}" alt="日別予約数のグラフ">
+
 </body>
 
 </html>

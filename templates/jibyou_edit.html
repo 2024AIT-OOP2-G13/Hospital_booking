@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <title>持病編集</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='base-style.css') }}">
+</head>
+
+<body>
+    <h1>持病を編集</h1>
+    <ul class="breadcrumb">
+        <li><a href="{{ url_for('index') }}">HOME</a></li>
+        <li><a href="{{ url_for('jibyou.list') }}">持病一覧</a></li>
+        <li>持病編集</li>
+    </ul>
+
+    <form action="{{ url_for('jibyou.edit', jibyou_id=jibyou.id) }}" method="post">
+        <label>ユーザー:
+            <select name="user_id" required>
+                <option value="">選択してください</option>
+                {% for user in users %}
+                <option value="{{ user.id }}" {{ 'selected' if jibyou.user.id==user.id }}>
+                    {{ user.name }}
+                </option>
+                {% endfor %}
+            </select>
+        </label><br>
+
+        <label>
+            <input type="checkbox" id="medical_condition_id" name="condition" 
+            value="disease" {% if jibyou.check %}checked{% endif %} />
+            持病あり
+        </label><br>
+
+        <button type="submit">更新</button>
+    </form>
+</body>
+
+</html>

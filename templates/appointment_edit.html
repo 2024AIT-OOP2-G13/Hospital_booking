@@ -1,14 +1,14 @@
 <!DOCTYPE html>
-<html lang="ja">
+<html>
 
 <head>
     <meta charset="UTF-8">
-    <title>予約編集</title>
+    <title>予約の編集</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='base-style.css') }}">
 </head>
 
 <body>
-    <h1>予約を編集</h1>
+    <h1>予約の編集</h1>
     <ul class="breadcrumb">
         <li><a href="{{ url_for('index') }}">HOME</a></li>
         <li><a href="{{ url_for('appointment.list') }}">予約一覧</a></li>
@@ -16,12 +16,37 @@
     </ul>
 
     <form action="{{ url_for('appointment.edit', appointment_id=appointment.id) }}" method="post">
-        <label>日付: <input type="date" name="date" value="{{ appointment.appointment_datetime.strftime('%Y-%m-%d') }}"
-                required></label><br>
-        <label>時間: <input type="time" name="time" value="{{ appointment.appointment_datetime.strftime('%H:%M') }}"
-                required></label><br>
-        <label>患者名: <input type="text" name="patient_name" value="{{ appointment.patient_name }}" required></label><br>
-        <button type="submit">保存</button>
+        <label>患者名:
+            <select name="user_id" required>
+                <option value="">選択してください</option>
+                {% for user in users %}
+                <option value="{{ user.id }}" {% if user.id == appointment.user.id %}selected{% endif %}>{{ user.name }}</option>
+                {% endfor %}
+            </select>
+        </label><br><br>
+
+        <label>予約日時: 
+            <input type="datetime-local" name="appointment_datetime" value="{{ appointment_datetime_str }}" required>
+        </label><br><br>
+
+        <label>診療科:
+            <select name="department" required>
+                <option value="">選択してください</option>
+                <option value="general-medicine" {% if appointment.department == 'general-medicine' %}selected{% endif %}>総合診療科</option>
+                <option value="internal-medicine" {% if appointment.department == 'internal-medicine' %}selected{% endif %}>一般内科</option>
+                <option value="general-surgery" {% if appointment.department == 'general-surgery' %}selected{% endif %}>一般外科</option>
+                <option value="pediatric-surgery" {% if appointment.department == 'pediatric-surgery' %}selected{% endif %}>小児外科</option>
+                <option value="pediatrics" {% if appointment.department == 'pediatrics' %}selected{% endif %}>小児内科</option>
+                <option value="obstetrics-gynecology" {% if appointment.department == 'obstetrics-gynecology' %}selected{% endif %}>産婦人科</option>
+                <option value="ophthalmology" {% if appointment.department == 'ophthalmology' %}selected{% endif %}>眼科</option>
+                <option value="dermatology" {% if appointment.department == 'dermatology' %}selected{% endif %}>皮膚科</option>
+                <option value="emergency-medicine" {% if appointment.department == 'emergency-medicine' %}selected{% endif %}>救急科</option>
+                <option value="radiology" {% if appointment.department == 'radiology' %}selected{% endif %}>放射線科</option>
+                <option value="other-centers" {% if appointment.department == 'other-centers' %}selected{% endif %}>その他センター等</option>
+            </select>
+        </label><br><br>
+
+        <button type="submit">更新</button>
     </form>
 </body>
 

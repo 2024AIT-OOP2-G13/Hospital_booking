@@ -11,20 +11,33 @@
     <h1>症状を編集</h1>
     <ul class="breadcrumb">
         <li><a href="{{ url_for('index') }}">HOME</a></li>
-        <li><a href="{{ url_for('medical_condition.list') }}">製品一覧</a></li>
+        <li><a href="{{ url_for('medical_condition.list') }}">症状一覧</a></li>
         <li>症状編集</li>
     </ul>
 
-    <form action="{{ url_for('product.edit', medical_condition_id=medical_condition.id) }}" method="post">
-        <label>症状: <input type="checkbox" id="medical_condition_id" name="condition" value="fever">
-            発熱
-            <input type="checkbox" id="medical_condition_id" name="condition" value="vomiting">
-            嘔吐
-            <input type="checkbox" id="medical_condition_id" name="condition" value="headache">
-            頭痛
-            <input type="checkbox" id="medical_condition_id" name="condition" value="dizziness">
-            眩暈
-            <button type="submit">追加</button>
+    <form action="{{ url_for('medical_condition.edit', condition_id=condition.id) }}" method="post">
+        <label>患者名:
+            <select name="user_id" required>
+                <option value="">選択してください</option>
+                {% for user in users %}
+                <option value="{{ user.id }}" {% if condition.user.id==user.id %}selected{% endif %}>
+                    {{ user.name }}
+                </option>
+                {% endfor %}
+            </select>
+        </label><br><br>
+
+        <h2>症状を選んでください:</h2>
+        <label>
+            <input type="checkbox" name="fever" value="fever" {% if condition.fever %}checked{% endif %}> 発熱<br>
+            <input type="checkbox" name="vomiting" value="vomiting" {% if condition.vomiting %}checked{% endif %}> 嘔吐<br>
+            <input type="checkbox" name="headache" value="headache" {% if condition.headache %}checked{% endif %}> 頭痛<br>
+            <input type="checkbox" name="dizziness" value="dizziness" {% if condition.dizziness %}checked{% endif %}> めまい<br>
+            <input type="checkbox" name="other" value="other" {% if condition.other %}checked{% endif %}> その他<br>
+        </label>
+        <br>
+
+        <button type="submit">更新</button>
     </form>
 </body>
 
