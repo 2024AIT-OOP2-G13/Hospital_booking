@@ -1,11 +1,18 @@
 from flask import Blueprint, render_template, request, redirect, url_for
 from models.medical_condition import MedicalCondition
 from models.user import User
+import numpy as np
+import os
+import matplotlib
+matplotlib.use('Agg')  # GUIのバックエンドを無効化
+import matplotlib.pyplot as plt
 
 medical_condition_bp = Blueprint('medical_condition', __name__, url_prefix='/medical-conditions')
 
 @medical_condition_bp.route('/')
 def list():
+    generate_condition_chart()  # 症状のグラフを生成する関数を呼び出す
+
     users = User.select()
     conditions = MedicalCondition.select()
 
@@ -31,7 +38,6 @@ def list():
 def add():
     if request.method == 'POST':
         user_id = request.form['user_id']
-
         fever = bool(request.form.get('fever'))
         vomiting = bool(request.form.get('vomiting'))
         headache = bool(request.form.get('headache'))
@@ -52,11 +58,11 @@ def edit(condition_id):
 
     if request.method == 'POST':
         user_id = request.form['user_id']
-        condition.check = bool(request.form.get('fever'))
-        condition.check = bool(request.form.get('vomiting'))
-        condition.check = bool(request.form.get('headache'))
-        condition.check = bool(request.form.get('dizziness'))
-        condition.check = bool(request.form.get('other'))
+        condition.fever = bool(request.form.get('fever'))
+        condition.vomiting = bool(request.form.get('vomiting'))
+        condition.headache = bool(request.form.get('headache'))
+        condition.dizziness = bool(request.form.get('dizziness'))
+        condition.other = bool(request.form.get('other'))
         condition.save()
         return redirect(url_for('medical_condition.list'))
 
@@ -76,5 +82,55 @@ def edit(condition_id):
         users=users
     )
 
-    users = User.select() 
-    return render_template('medical_condition_edit.html', condition=condition, users=users) 
+# 新しい関数：症状ごとのグラフ作成
+def generate_condition_chart():
+    # 症状ごとのカウント
+    fever_counter = 0
+    vomiting_counter = 0
+    headache_counter = 0
+    dizziness_counter = 0
+    other_counter = 0
+
+    # MedicalConditionからすべてのデータを取得
+    conditions = MedicalCondition.select()
+
+    # 各症状のカウントを行う
+    for condition in conditions:
+        if condition.fever:
+            fever_counter += 1
+        if condition.vomiting:
+            vomiting_counter += 1
+        if condition.headache:
+            headache_counter += 1
+        if condition.dizziness:
+            dizziness_counter += 1
+        if condition.other:
+            other_counter += 1
+
+    # 英語のラベルとカウント
+    labels = ['fever', 'vomiting', 'headache', 'dizziness', 'other']
+    counts = [fever_counter, vomiting_counter, headache_counter, dizziness_counter, other_counter]
+
+    # カウントが全て0の場合、グラフを生成しない
+    if not any(counts):  # もしカウントが0の場合
+        return
+
+    # グラフ作成
+    plt.figure(figsize=(6, 6))
+    plt.bar(labels, counts, color=['blue', 'green', 'red', 'purple', 'orange'])
+    plt.title('Symptom Counts')
+    plt.xlabel('Symptoms')
+    plt.ylabel('Count')
+
+    # X軸のラベルが重ならないように回転を加える
+    plt.xticks(rotation=45, ha='right')
+
+    # レイアウト調整（ラベルの重なり防止）
+    plt.tight_layout()
+
+    # staticフォルダに保存
+    static_dir = os.path.join(os.getcwd(), 'static')
+    os.makedirs(static_dir, exist_ok=True)
+    save_path = os.path.join(static_dir, 'condition_chart.png')
+    plt.savefig(save_path)
+    plt.close()
