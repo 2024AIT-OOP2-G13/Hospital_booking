@@ -10,9 +10,16 @@
 <body>
   <h1>index</h1>
   <ul>
-    <li><a href="{{ url_for('booking.request') }}">予約希望へ</a></li>
-    <li><a href="{{ url_for('order.list') }}">予約リスト</a></li>
+    <li><a href="{{ url_for('user.list') }}">ユーザーリスト</a></li>
+    <li><a href="{{ url_for('appointment.list') }}">予約希望へ</a></li>
+    <li><a href="{{ url_for('jibyou.list') }}">持病リスト</a></li>
+    <li><a href="{{ url_for('medical_condition.list') }}">症状リスト</a></li>
   </ul>
+  <!-- 変更ここから -->
+  <h1>症状の統計</h1>
+  <img src="{{ url_for('static', filename='condition_chart.png') }}" alt="症状の統計-棒グラフ">
+
+  <!-- 変更ここまで -->
 </body>
 
 </html>
