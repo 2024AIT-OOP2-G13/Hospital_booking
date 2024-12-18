@@ -50,17 +50,14 @@ def list():
     plt.gca().yaxis.set_major_locator(ticker.MultipleLocator(1))
     plt.tight_layout()
 
-    # グラフを画像としてバッファに保存
-    buf = io.BytesIO()
-    plt.savefig(buf, format='png')
-    buf.seek(0)
+    # グラフを画像としてバァイルに保存
+    static_dir = os.path.join(os.getcwd(), 'static')
+    os.makedirs(static_dir, exist_ok=True)
+    save_path = os.path.join(static_dir, 'line_date_chart.png')
+    plt.savefig(save_path)
     plt.close()
 
-    # 画像をBase64エンコード
-    image_base64 = base64.b64encode(buf.getvalue()).decode('utf-8')
-    buf.close()
-
-    return render_template('appointment_list.html', title='予約一覧', items=appointments, image_base64=image_base64)
+    return render_template('appointment_list.html', title='予約一覧', items=appointments, line_chart_path=save_path)
 
 @appointment_bp.route('/add', methods=['GET', 'POST'])
 def add():

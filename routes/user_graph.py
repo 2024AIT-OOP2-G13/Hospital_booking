@@ -1,13 +1,10 @@
-from flask import Blueprint, Flask, render_template
+from flask import Blueprint, render_template
 import matplotlib
 matplotlib.use('Agg') 
 import matplotlib.pyplot as plt
-import io
-import base64
 from collections import Counter
 from models import User
-
-app = Flask(__name__)
+import os
 
 # Blueprintの作成
 graph_bp = Blueprint('graph', __name__)
@@ -37,13 +34,12 @@ def index():
     plt.ylim(0, 10)
     plt.tight_layout()
 
-    # グラフをBase64形式でエンコード
-    buf = io.BytesIO()
-    plt.savefig(buf, format="png")
-    buf.seek(0)
-    base64_img = base64.b64encode(buf.read()).decode('utf-8')
-    buf.close()
+    # グラフを画像としてファイルに保存
+    static_dir = os.path.join(os.getcwd(), 'static')
+    os.makedirs(static_dir, exist_ok=True)
+    save_path = os.path.join(static_dir, 'age_distribution_chart.png')
+    plt.savefig(save_path)
+    plt.close()
 
-    # Base64画像をHTMLに埋め込む
-    graph_html = f'<img src="data:image/png;base64,{base64_img}" alt="Graph">'
-    return render_template("index.html", graph=graph_html)
+    # 保存した画像のパスをテンプレートに渡す
+    return render_template("index.html", graph_path=save_path)
